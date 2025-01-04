@@ -62,29 +62,28 @@ int main(){
 
 
         if(mouse.x - last.x < -dMin){
-            keyDown(VK_LEFT, 1, 100);
-            command = "L";
+            command = VK_LEFT;
         }
         if(mouse.x - last.x > dMin){
-            keyDown(VK_RIGHT, 1, 100);
-            command = "R";
+            command = VK_RIGHT;
         }
         if(mouse.y - last.y > dMin){
-            keyDown(VK_DOWN, 1, 100);
-            command = "D";
+            command = VK_DOWN;
         }
         if(mouse.y - last.y < -dMin){
-            keyDown(VK_UP, 1, 100);
-            command = "U";
+            command = VK_UP;
         }
 
-        if(command == " "){
+        if(command == VK_ACCEPT){
             Sleep(100);
-            keyUp()
             continue;
         }
 
-        cout << command << endl;
+        keyDown(command);
+        Sleep(100);
+        keyUp(command);
+
+        //cout << command << endl;
 
         //cout << "x=" << mouse.x << "\ny=" << mouse.y << endl;
 
