@@ -58,7 +58,7 @@ int main(){
 
         GetCursorPos(&mouse);
 
-        string command = " ";
+        WORD command = VK_ACCEPT;
 
 
         if(mouse.x - last.x < -dMin){
@@ -80,6 +80,7 @@ int main(){
 
         if(command == " "){
             Sleep(100);
+            keyUp()
             continue;
         }
 
