@@ -2,8 +2,8 @@
 #include <windef.h>
 #include <winuser.h>
 #include <windows.h>
-
-#define dMin 5
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -29,17 +29,6 @@ void keyDown(WORD keyCode, bool raise = false, int raiseAfter = 100){
     }
 }
 
-int main_test(){
-    Sleep(3000);
-    int i=1;
-    while (++i)
-    {
-        keyDown(VK_UP, 1, 100);
-        //Sleep(100);
-    }
-    return 0;
-}
-
 int main(){
     cout << "Starting...";
 
@@ -51,43 +40,72 @@ int main(){
     last.x = 0;
     last.y = 0;
 
+    ifstream configFile("config.csv");
+    vector<int> config;
+    string temp;
+    while (getline(configFile, temp))
+        config.push_back(stoi(temp));
+    configFile.close();
     
+    #define minimalDelta  config[0]
+    #define LEFTK         config[1]
+    #define RIGHTK        config[2]
+    #define UPK           config[3]
+    #define DOWNK         config[4]
+    #define timeUnit      config[5]
+    #define resetInterval config[6]
+
+    const int width  = ::GetSystemMetrics(SM_CXSCREEN);
+    const int height = ::GetSystemMetrics(SM_CYSCREEN);
+
+    int c = 0;
+
     while(1){
         last.x = mouse.x;
         last.y = mouse.y;
 
         GetCursorPos(&mouse);
 
-        WORD command = VK_ACCEPT;
+        //WORD command = VK_ACCEPT;
 
+        int dx = mouse.x - last.x;
+        int dy = mouse.y - last.y;
 
-        if(mouse.x - last.x < -dMin){
-            command = VK_LEFT;
+        bool mx = abs(dx) > minimalDelta;
+        bool my = abs(dy) > minimalDelta;
+
+        if(mx && my){
+            int sum = abs(dx) + abs(dy);
+
+            if(dx < 0)
+                keyDown(LEFTK, 1, double(timeUnit) / double(sum) * abs(dx)); //balra
+            else
+                keyDown(RIGHTK, 1, double(timeUnit) / double(sum) * abs(dx)); //jobbra
+            
+            if(dy < 0)
+                keyDown(UPK, 1, double(timeUnit) / double(sum) * abs(dy)); //fel
+            else
+                keyDown(DOWNK, 1, double(timeUnit) / double(sum) * abs(dy)); //le   
+        }else if(mx){
+            if(dx < 0)
+                keyDown(LEFTK, 1, timeUnit); //balra
+            else
+                keyDown(RIGHTK, 1, timeUnit); //jobbra
+        }else if(my){
+            if(dy < 0)
+                keyDown(UPK, 1, timeUnit); //fel
+            else
+                keyDown(DOWNK, 1, timeUnit); //le   
+        }else{
+            Sleep(timeUnit);
         }
-        if(mouse.x - last.x > dMin){
-            command = VK_RIGHT;
-        }
-        if(mouse.y - last.y > dMin){
-            command = VK_DOWN;
-        }
-        if(mouse.y - last.y < -dMin){
-            command = VK_UP;
-        }
 
-        if(command == VK_ACCEPT){
-            Sleep(100);
-            continue;
-        }
-
-        keyDown(command);
-        Sleep(100);
-        keyUp(command);
-
-        //cout << comméééllkááéééáléand << endl;
-
-        //cout << "x=" << mouse.x << "\ny=" << mouse.y << endl;
-
-        //Sleep(100);
+        if(c * timeUnit > resetInterval){
+            c = 0;
+            SetCursorPos(width/2, height/2);
+        }else
+        
+        c++;
     }
         
 
