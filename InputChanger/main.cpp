@@ -83,7 +83,7 @@ int main(){
         Sleep(100);
         keyUp(command);
 
-        //cout << command << endl;
+        //cout << comméééllkááéééáléand << endl;
 
         //cout << "x=" << mouse.x << "\ny=" << mouse.y << endl;
 
